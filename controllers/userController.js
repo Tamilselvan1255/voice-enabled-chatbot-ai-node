@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 
 const userRegister = async (req, res) => {
-  const { userName, email, password } = req.body;
+  let { userName, email, password } = req.body;
   try {
     const existUser = await userModel.findOne({ email });
 
@@ -11,7 +11,9 @@ const userRegister = async (req, res) => {
       return res
         .status(400)
         .send({ error: "User with this email already exists!" });
-    }
+    };
+
+    email = email.toLowerCase();
 
     const hashed = await bcrypt.hash(password, 10);
     await userModel.create({ userName, email, password: hashed });
@@ -23,8 +25,10 @@ const userRegister = async (req, res) => {
 };
 
 const userLogin = async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   try {
+    email = email.toLowerCase();
+    
     const existUser = await userModel.findOne({ email });
     if (!existUser) {
       return res.status(404).send({ error: "User not found!" });
