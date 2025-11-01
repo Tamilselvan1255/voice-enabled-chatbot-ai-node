@@ -3,6 +3,8 @@ const REQUIRED = {
   userLogin: ["email", "password"],
 };
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const validator = (modelName) => {
   return (req, res, next) => {
     try {
@@ -13,6 +15,10 @@ const validator = (modelName) => {
         return res
           .status(400)
           .send({ error: `Missing fields: ${missingFields.join(", ")}` });
+      };
+
+      if(req.body.email && !emailRegex.test(req.body.email)){
+        return res.status(400).send({error: "Invalid email format!"})
       }
 
       next();
